@@ -11,10 +11,7 @@ namespace BangazonAPI.Models
         public string firstName { get; set; }
         public string lastName { get; set; }
         public bool isSupervisor { get; set; }
-        public List<Department> department { get; set; } = new List<Department>();
-        public Department getDepartmentById(int id)
-        {
-            return department[id];
-        }
+        public int DepartmentId { get; set; }
+        public Department employeesDepartment { get; set; } = new Department(); 
     }
 }

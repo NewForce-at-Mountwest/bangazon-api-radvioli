@@ -12,15 +12,12 @@ namespace BangazonAPI.Models
         public string title { get; set; }
         public string description { get; set; }
         public int quantity { get; set; }
-        public List<ProductType> productType = new List<ProductType>();
-        public ProductType getPTypeById(int id)
-        {
-            return productType[id];
-        }
-        public List<Customer> customer = new List<Customer>();
-        public Customer getCustomerById(int id)
-        {
-            return customer[id];
-        }
+        public int ProductId { get; set; }
+        public int CustomerId { get; set; }
+
+        public ProductType productsType { get; set; } = new ProductType();
+    
+        public Customer customerPurchasing { get; set; } = new Customer();
+       
     }
 }

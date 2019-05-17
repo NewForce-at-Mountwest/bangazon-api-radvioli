@@ -10,10 +10,8 @@ namespace BangazonAPI.Models
         public int id { get; set; }
         public string name { get; set; }
         public int accountNumber { get; set; }
-        public List<Customer> customer = new List<Customer>();
-        public Customer getCustomerById(int id)
-        {
-            return customer[id];
-        }
+        public int CustomerId { get; set; }
+        public Customer customerPaying { get; set; } = new Customer();
+       
     }
 }
