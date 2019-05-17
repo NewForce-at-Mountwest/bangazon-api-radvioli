@@ -8,15 +8,10 @@ namespace BangazonAPI.Models
     public class Order
     {
         public int id { get; set; }
-        public List<Customer> customer = new List<Customer>();
-        public Customer getCustomerById(int id)
-        {
-            return customer[id];
-        }
-        public List<PaymentType> paymentType = new List<PaymentType>();
-        public PaymentType getPTypeById(int id)
-        {
-            return paymentType[id];
-        }
+        public int CustomerId { get; set; }
+        public int PaymentTypeId { get; set; }
+        public Customer ordersCustomer { get; set; } = new Customer();
+
+        public PaymentType ordersPayment { get; set; } = new PaymentType();
     }
 }

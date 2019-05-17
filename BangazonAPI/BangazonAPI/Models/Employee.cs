@@ -5,7 +5,13 @@ using System.Threading.Tasks;
 
 namespace BangazonAPI.Models
 {
-    public class Class
+    public class Employee
     {
+        public int id { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
+        public bool isSupervisor { get; set; }
+        public int DepartmentId { get; set; }
+        public Department employeesDepartment { get; set; } = new Department(); 
     }
 }
