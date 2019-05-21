@@ -154,7 +154,7 @@ namespace TestBangazonAPI
         }
 
         [Fact]
-        public async Task Test_Modify_Product()
+        public async Task Test_Modify_ProductType()
         {
             //Sets up a string that will replace the existing Name
             string newName = "New Drinks";
