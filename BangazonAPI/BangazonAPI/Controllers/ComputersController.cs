@@ -42,38 +42,31 @@ namespace BangazonAPI.Controllers
 
                     string command = "";
 
-                    string productsColumns = @"
-                        SELECT p.Id AS 'Product Id', 
-                        p.price AS 'Product Price', 
-                        p.title AS 'Product Title',
-                        p.description AS 'Product Description',
-                        p.quantity AS 'Product Quantity', 
-                        pt.Id AS 'Product Type Id',
-                        pt.name AS 'Product Type Name',
-                        c.Id AS 'Customer Id',
-                        c.firstName AS 'Customer First Name',
-                        c.lastName AS 'Customer Last Name',
-                        c.accountCreated AS 'Account Creation Date',
-                        c.lastActive AS 'Last User Login Date'";
-                    string productsTable = "FROM Product p JOIN ProductType pt ON p.ProductTypeId = pt.Id JOIN Customer c on p.CustomerId = c.Id";
+                    string computersColumns = @"
+                        SELECT c.Id AS 'Computer Id', 
+                        c.PurchaseDate AS 'Computer Purchase Date', 
+                        c.DecommissionDate AS 'Decommission Date (If Applicable)',
+                        c.make AS 'Computer Make',
+                        c.model AS 'Computer Model'";
+                    string computersTable = "FROM Computer c";
 
-                    command = $"{productsColumns} {productsTable}";
+                    command = $"{computersColumns} {computersTable}";
 
 
 
 
                     cmd.CommandText = command;
                     SqlDataReader reader = cmd.ExecuteReader();
-                    List<Product> Products = new List<Product>();
+                    List<Computer> Products = new List<Computer>();
 
                     while (reader.Read())
                     {
-
-                        Product currentProduct = new Product
+                        //LEFT OFF HERE
+                        Computer currentComputer = new Computer
                         {
-                            id = reader.GetInt32(reader.GetOrdinal("Product Id")),
-                            price = reader.GetDecimal(reader.GetOrdinal("Product Price")),
-                            title = reader.GetString(reader.GetOrdinal("Product Title")),
+                            id = reader.GetInt32(reader.GetOrdinal("Computer Id")),
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("Computer Purchase Date")),
+                            DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate (If Applicable)")),
                             description = reader.GetString(reader.GetOrdinal("Product Description")),
                             quantity = reader.GetInt32(reader.GetOrdinal("Product Quantity")),
                             ProductTypeId = reader.GetInt32(reader.GetOrdinal("Product Type Id")),
