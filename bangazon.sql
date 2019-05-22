@@ -1,4 +1,4 @@
-﻿DELETE FROM OrderProduct;
+DELETE FROM OrderProduct;
 DELETE FROM ComputerEmployee;
 DELETE FROM EmployeeTraining;
 DELETE FROM Employee;
