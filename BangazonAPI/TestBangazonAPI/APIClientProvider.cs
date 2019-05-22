@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc.Testing;
 using BangazonAPI;
+using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http;
 using Xunit;
 
