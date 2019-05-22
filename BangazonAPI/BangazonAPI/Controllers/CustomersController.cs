@@ -77,7 +77,7 @@ namespace BangazonAPI.Controllers
                                     {includeTables}";
                     }
                         //Adds query string for PaymentType fields if added
-                        if (include == "payment")
+                        else if (include == "payment")
                         {
                             string includeColumns2 = @"
 						pm.Id AS 'Payment ID',
@@ -138,7 +138,7 @@ namespace BangazonAPI.Controllers
                                     id = reader.GetInt32(reader.GetOrdinal("Product ID")),
                                     ProductTypeId = reader.GetInt32(reader.GetOrdinal("Product Type ID")),
                                     CustomerId = reader.GetInt32(reader.GetOrdinal("Customer ID")),
-                                    price = reader.GetInt32(reader.GetOrdinal("Product Price")),
+                                    price = reader.GetDecimal(reader.GetOrdinal("Product Price")),
                                     title = reader.GetString(reader.GetOrdinal("Product Title")),
                                     description = reader.GetString(reader.GetOrdinal("Product Description")),
                                     quantity = reader.GetInt32(reader.GetOrdinal("Product Quantity")),
