@@ -76,10 +76,10 @@ namespace BangazonAPI.Controllers
                                     {customerTable} 
                                     {includeTables}";
                     }
-                        //Adds query string for PaymentType fields if added
-                        else if (include == "payment")
-                        {
-                            string includeColumns2 = @"
+                    //Adds query string for PaymentType fields if added
+                    else if (include == "payment")
+                    {
+                        string includeColumns2 = @",
 						pm.Id AS 'Payment ID',
 						pm.AcctNumber AS 'Payment Account Number',
 						pm.Name AS 'Pament Name',
@@ -87,80 +87,73 @@ namespace BangazonAPI.Controllers
 						";
 
                         //Joins Customers and PaymentTypes
-                            string includeTables2 = @"
+                        string includeTables2 = @"
 						JOIN PaymentType pm ON c.Id = pm.CustomerID";
 
-                            //Concatinates aforementioned query strings together if Pruducts and Payments are included
-                            command = $@"{customerColumns}
+                        //Concatinates aforementioned query strings together if Pruducts and Payments are included
+                        command = $@"{customerColumns}
                                      {includeColumns2}
                                      {customerTable}
                                      {includeTables2}";
 
-                        }
-                        else
+                    }
+                    else
+                    {
+                        //Query string requesting only Customers 
+                        command = $"{customerColumns} {customerTable}";
+                    }
+
+                    if (q != null)
+                    {
+                        //Allows for pattern matching-ish queries against Customer.FirstName OR Customer.LastName
+                        command += $" WHERE c.FirstName LIKE '{q}%' OR c.LastName LIKE '{q}%'";
+                    }
+                    
+                    cmd.CommandText = command;
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    List<Customer> customers = new List<Customer>();
+
+                    while (reader.Read())
+                    {
+
+                        Customer currentCustomer = new Customer
                         {
-                            //Query string requesting only Customers 
-                            command = $"{customerColumns} {customerTable}";
-                        }
+                            id = reader.GetInt32(reader.GetOrdinal("Customer Id")),
+                            firstName = reader.GetString(reader.GetOrdinal("Customer First Name")),
+                            lastName = reader.GetString(reader.GetOrdinal("Customer Last Name")),
+                            accountCreated = reader.GetDateTime(reader.GetOrdinal("Account Created Date")),
+                            lastActive = reader.GetDateTime(reader.GetOrdinal("Last Date Active"))
+                        };
 
-                        if (q != null)
+                        if (include == "product")
                         {
-                            //Allows for pattern matching-ish queries against Customer.FirstName OR Customer.LastName
-                            command += $" WHERE c.FirstName LIKE '{q}%' OR c.LastName LIKE '{q}%'";
-                        }
-
-
-
-                        cmd.CommandText = command;
-                        SqlDataReader reader = cmd.ExecuteReader();
-                        List<Customer> customers = new List<Customer>();
-                        
-                        while (reader.Read())
-                        {
-
-                            Customer currentCustomer = new Customer
+                            Product currentProduct = new Product
                             {
-                                id = reader.GetInt32(reader.GetOrdinal("Customer Id")),
-                                firstName = reader.GetString(reader.GetOrdinal("Customer First Name")),
-                                lastName = reader.GetString(reader.GetOrdinal("Customer Last Name")),
-                                accountCreated = reader.GetDateTime(reader.GetOrdinal("Account Created Date")),
-                                lastActive = reader.GetDateTime(reader.GetOrdinal("Last Date Active"))
-
+                                id = reader.GetInt32(reader.GetOrdinal("Product ID")),
+                                ProductTypeId = reader.GetInt32(reader.GetOrdinal("Product Type ID")),
+                                CustomerId = reader.GetInt32(reader.GetOrdinal("Customer ID")),
+                                price = reader.GetDecimal(reader.GetOrdinal("Product Price")),
+                                title = reader.GetString(reader.GetOrdinal("Product Title")),
+                                description = reader.GetString(reader.GetOrdinal("Product Description")),
+                                quantity = reader.GetInt32(reader.GetOrdinal("Product Quantity")),
                             };
 
-
-                            
-                            if (include == "product")
-
+                            // If the CUstomer is already on the list, don't add them again!
+                            if (customers.Any(c => c.id == currentCustomer.id))
                             {
-                                Product currentProduct = new Product
-                                {
-                                    id = reader.GetInt32(reader.GetOrdinal("Product ID")),
-                                    ProductTypeId = reader.GetInt32(reader.GetOrdinal("Product Type ID")),
-                                    CustomerId = reader.GetInt32(reader.GetOrdinal("Customer ID")),
-                                    price = reader.GetDecimal(reader.GetOrdinal("Product Price")),
-                                    title = reader.GetString(reader.GetOrdinal("Product Title")),
-                                    description = reader.GetString(reader.GetOrdinal("Product Description")),
-                                    quantity = reader.GetInt32(reader.GetOrdinal("Product Quantity")),
-                                };
-
-
-                                // If the CUstomer is already on the list, don't add them again!
-                                if (customers.Any(c => c.id == currentCustomer.id))
-                                {
-                                    Customer thisCustomer = customers.Where(c => c.id == currentCustomer.id).FirstOrDefault();
-                                    thisCustomer.Products.Add(currentProduct);
-                                }
-                                else
-                                {
-                                    currentCustomer.Products.Add(currentProduct);
-                                    customers.Add(currentCustomer);
-
-                                };
+                                Customer thisCustomer = customers.Where(c => c.id == currentCustomer.id).FirstOrDefault();
+                                thisCustomer.Products.Add(currentProduct);
+                            }
+                            else
+                            {
+                                currentCustomer.Products.Add(currentProduct);
+                                customers.Add(currentCustomer);
 
                             }
 
-                        if (include == "payment")
+                        }
+
+                        else if (include == "payment")
 
                         {
                             PaymentType currentPayment = new PaymentType
@@ -168,7 +161,6 @@ namespace BangazonAPI.Controllers
                                 id = reader.GetInt32(reader.GetOrdinal("Payment ID")),
                                 accountNumber = reader.GetInt32(reader.GetOrdinal("Payment Account Number")),
                                 name = reader.GetString(reader.GetOrdinal("Pament Name"))
-                                ,
                             };
 
 
@@ -189,17 +181,17 @@ namespace BangazonAPI.Controllers
 
 
                         else
-                            {
-                                customers.Add(currentCustomer);
-                            }
-
-
+                        {
+                            customers.Add(currentCustomer);
                         }
 
-                        reader.Close();
-                        return Ok(customers);
 
-                    
+                    }
+
+                    reader.Close();
+                    return Ok(customers);
+
+
                 }
             }
         }
