@@ -30,7 +30,7 @@ namespace BangazonAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(string include, string q)
+        public async Task<IActionResult> Get(string include, bool completed, string q)
         {
             using (SqlConnection conn = Connection)
             {
@@ -54,6 +54,27 @@ namespace BangazonAPI.Controllers
 						
                         ";
 
+                    if (completed == true)
+                    {
+                        string completedColumns = @"
+                        SELECT o.id AS 'Order Id', 
+                        o.CustomerId AS 'Customer Id',                       
+                        pm.id AS 'Payment Type Id',
+                        pm.name AS 'Payment Type Name',
+                        pm.AcctNumber AS 'Payment Account Number'
+						
+                        ";
+
+                        string completedTables = @"
+                        FROM [Order] o WHERE PaymentTypeId IS NOT NULL
+                        JOIN PaymentType pm ON o.PaymentTypeId = pm.id					
+						
+                        ";
+                        command = $@"
+                                    {completedColumns}
+                                    
+                                    {completedTables}";
+                    }
                     if (include == "product")
                     {
                         string includeColumns = @", 
@@ -118,7 +139,7 @@ namespace BangazonAPI.Controllers
                             },
 
                         };
-
+                        
                         if (include == "product")
                         {
                             Product currentProduct = new Product
@@ -160,11 +181,11 @@ namespace BangazonAPI.Controllers
                             if (Orders.Any(o => o.id == currentOrder.id))
                             {
                                 Order thisOrder = Orders.Where(o => o.id == currentOrder.id).FirstOrDefault();
-                                thisOrder.Customers.Add(currentCustomer);
+                                thisOrder.ordersCustomer = currentCustomer;
                             }
                             else
                             {
-                                currentOrder.Customers.Add(currentCustomer);
+                                currentOrder.ordersCustomer = currentCustomer;
                                 Orders.Add(currentOrder);
 
                             }
