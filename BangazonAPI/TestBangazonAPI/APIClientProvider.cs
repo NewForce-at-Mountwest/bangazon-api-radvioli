@@ -2,7 +2,6 @@
 using BangazonAPI;
 using System.Net.Http;
 using Xunit;
-using System.Data.SqlClient;
 
 
 namespace TestBangazonAPI
