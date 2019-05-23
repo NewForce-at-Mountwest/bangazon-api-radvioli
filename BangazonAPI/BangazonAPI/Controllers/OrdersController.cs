@@ -30,7 +30,7 @@ namespace BangazonAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get(string include, bool completed, string q)
+        public async Task<IActionResult> Get(string include, string completed)
         {
             using (SqlConnection conn = Connection)
             {
@@ -54,7 +54,7 @@ namespace BangazonAPI.Controllers
 						
                         ";
 
-                    if (completed == true)
+                    if (completed == "false")
                     {
                         string completedColumns = @"
                         SELECT o.id AS 'Order Id', 
@@ -66,7 +66,7 @@ namespace BangazonAPI.Controllers
                         ";
 
                         string completedTables = @"
-                        FROM [Order] o WHERE PaymentTypeId IS NOT NULL
+                        FROM [Order] o WHERE PaymentTypeId IS NULL
                         JOIN PaymentType pm ON o.PaymentTypeId = pm.id					
 						
                         ";
@@ -77,7 +77,7 @@ namespace BangazonAPI.Controllers
                     }
                     if (include == "product")
                     {
-                        string includeColumns = @", 
+                        string includePColumns = @", 
                         op.Productid AS 'Product Id',
                         p.productTypeId AS 'Product Type Id',                                           
                         p.price AS 'Product Price',
@@ -86,14 +86,16 @@ namespace BangazonAPI.Controllers
                         p.quantity AS 'Product Quantity'
                         
                         ";
-                        string includeTables = @"
-                        JOIN Customer c ON o.CustomerId = c.id
-                        ";
+                        string includePTables = @"
+                        
+                        JOIN OrderProduct op ON o.id = op.OrderId
+						JOIN Product p ON op.ProductId = p.Id
+                            ";
 
                         command = $@"{ordersColumns}
-                                    {includeColumns}
+                                    {includePColumns}
                                      {ordersTable}
-                                    {includeTables}";
+                                    {includePTables}";
                     }
 
                     if (include == "customer")
@@ -106,8 +108,9 @@ namespace BangazonAPI.Controllers
                         
                         ";
                         string includeTables = @"
-                        JOIN OrderProduct op ON o.id = op.OrderId
-						JOIN Product p ON op.ProductId = p.Id
+                        JOIN Customer c ON o.CustomerId = c.id
+                        
+                        
                         ";
 
                         command = $@"{ordersColumns}
@@ -153,17 +156,17 @@ namespace BangazonAPI.Controllers
 
                             };
 
-                            if (Orders.Any(o => o.id == currentOrder.id))
-                            {
-                                Order thisOrder = Orders.Where(o => o.id == currentOrder.id).FirstOrDefault();
-                                thisOrder.Products.Add(currentProduct);
-                            }
-                            else
-                            {
+                            //if (Orders.Any(o => o.id == currentOrder.id))
+                            //{
+                            //    Order thisOrder = Orders.Where(o => o.id == currentOrder.id).FirstOrDefault();
+                            //    thisOrder.Products.Add(currentProduct);
+                            //}
+                            //else
+                            //{
                                 currentOrder.Products.Add(currentProduct);
                                 Orders.Add(currentOrder);
 
-                            }
+                            
                         }
                         if (include == "customer")
                         {
@@ -178,18 +181,11 @@ namespace BangazonAPI.Controllers
 
                             };
 
-                            if (Orders.Any(o => o.id == currentOrder.id))
-                            {
-                                Order thisOrder = Orders.Where(o => o.id == currentOrder.id).FirstOrDefault();
-                                thisOrder.ordersCustomer = currentCustomer;
-                            }
-                            else
-                            {
                                 currentOrder.ordersCustomer = currentCustomer;
                                 Orders.Add(currentOrder);
 
                             }
-                        }
+                        
 
                         else
                         {
