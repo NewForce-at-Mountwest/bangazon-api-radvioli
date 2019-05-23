@@ -47,14 +47,14 @@ namespace BangazonAPI.Controllers
                                                e.IsSuperVisor, 
                                                e.DepartmentId,
                                                d.Id AS 'Department Id', 
-                                               d.Name AS 'Department', 
+                                               d.name AS 'Department', 
                                                c.Id AS 'Computer Id',
                                                c.purchaseDate,
                                                c.make,
                                                c.manufacturer,
                                                c.decomissionDate
 						
-                        FROM Employee e LEFT JOIN Department d ON e.DepartmentId = d.Id
+                        FROM Employee e FULL JOIN Department d ON e.DepartmentId = d.Id
 						LEFT JOIN ComputerEmployee ce ON e.Id = ce.EmployeeId
                         LEFT JOIN Computer c ON ce.ComputerId= c.Id";
 
@@ -132,13 +132,13 @@ namespace BangazonAPI.Controllers
                                                e.IsSuperVisor, 
                                                e.DepartmentId,
                                                d.Id AS 'Department Id', 
-                                               d.Name AS 'Department',
+                                               d.name AS 'Department',
                                                c.Id AS 'Computer Id',
                                             c.purchaseDate,
                                                c.make,
                                                c.manufacturer,
                                                c.decomissionDate
-                        FROM Employee e LEFT JOIN Department d ON e.DepartmentId = d.Id
+                        FROM Employee e FULL JOIN Department d ON e.DepartmentId = d.Id
 						LEFT JOIN ComputerEmployee ce ON e.Id = ce.EmployeeId
                         LEFT JOIN Computer c ON ce.ComputerId= c.Id WHERE e.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
