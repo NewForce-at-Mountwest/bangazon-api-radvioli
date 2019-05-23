@@ -32,7 +32,7 @@ namespace TestBangazonAPI
 
             
             HttpResponseMessage response = await client.PostAsync(
-                "api/Employees",
+                "api/employees",
                 new StringContent(employeeAsJSON, Encoding.UTF8, "application/json")
             );
             //check to see if cat was hired
@@ -52,7 +52,7 @@ namespace TestBangazonAPI
         // Fire my cat and make sure he's deleted from DB
         public async Task deleteEmployee(Employee employee, HttpClient client)
         {
-            HttpResponseMessage deleteResponse = await client.DeleteAsync($"api/Employees/{employee.id}");
+            HttpResponseMessage deleteResponse = await client.DeleteAsync($"api/employees/{employee.id}");
             deleteResponse.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
@@ -67,7 +67,7 @@ namespace TestBangazonAPI
             {
 
                 // get all employees
-                HttpResponseMessage response = await client.GetAsync("api/Employees");
+                HttpResponseMessage response = await client.GetAsync("api/employees");
 
                 // check for response
                 response.EnsureSuccessStatusCode();
@@ -97,7 +97,7 @@ namespace TestBangazonAPI
                 Employee newEmployee = await createEmployee(client);
 
                 // fetch that employee
-                HttpResponseMessage response = await client.GetAsync($"api/Employees/{newEmployee.id}");
+                HttpResponseMessage response = await client.GetAsync($"api/employees/{newEmployee.id}");
 
                 response.EnsureSuccessStatusCode();
 
@@ -109,10 +109,10 @@ namespace TestBangazonAPI
 
                 // check to see if right response came back
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Equal("Andy", newEmployee.firstName);
+                Assert.Equal("Ash", Employee.lastName);
 
                 // fire the cat
-                await deleteEmployee(newEmployee, client);
+                await deleteEmployee(Employee, client);
             }
         }
 
@@ -123,7 +123,7 @@ namespace TestBangazonAPI
             using (var client = new APIClientProvider().Client)
             {
                 // attempt to grab nonexistant employee
-                HttpResponseMessage response = await client.GetAsync("api/Employees/123456");
+                HttpResponseMessage response = await client.GetAsync("api/employees/123456");
 
                 // check for 204 code
                 Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
@@ -155,7 +155,7 @@ namespace TestBangazonAPI
             using (var client = new APIClientProvider().Client)
             {
                 // try to delete an employee that doesn't exist
-                HttpResponseMessage deleteResponse = await client.DeleteAsync("/api/Employees/987654");
+                HttpResponseMessage deleteResponse = await client.DeleteAsync("/api/employees/987654");
                 Assert.False(deleteResponse.IsSuccessStatusCode);
                 Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
             }
@@ -182,7 +182,7 @@ namespace TestBangazonAPI
 
                 // PUT request
                 HttpResponseMessage response = await client.PutAsync(
-                    $"api/Employees/{newEmployee.id}",
+                    $"api/employees/{newEmployee.id}",
                     new StringContent(editedEmployeeAsJSON, Encoding.UTF8, "application/json")
                 );
 
@@ -196,7 +196,7 @@ namespace TestBangazonAPI
                 Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
 
-                HttpResponseMessage getEmployee = await client.GetAsync($"api/Employees/{newEmployee.id}");
+                HttpResponseMessage getEmployee = await client.GetAsync($"api/employees/{newEmployee.id}");
                 getEmployee.EnsureSuccessStatusCode();
 
                 string getEmployeeBody = await getEmployee.Content.ReadAsStringAsync();
