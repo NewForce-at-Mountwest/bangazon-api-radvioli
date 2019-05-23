@@ -60,7 +60,7 @@ namespace BangazonAPI.Controllers
                     ";
 
                         string includeTables = @"
-                        JOIN Employees ON d.Id = e.DepartmentId
+                        JOIN Employees e ON d.Id = e.DepartmentId
                      ";
                         command = $@"{departmentColumns}
                                      {includeColumns}
@@ -70,7 +70,7 @@ namespace BangazonAPI.Controllers
                     }
                     else
                     {
-                        command = $"{departmentColumns} {departmentTables}";   
+                        command = $"{departmentColumns} {departmentTables}";
 
                     }
                     if (filter == "budget&_gt=300000")
@@ -100,7 +100,7 @@ namespace BangazonAPI.Controllers
                                 lastName = reader.GetString(reader.GetOrdinal("Employee Last Name")),
                                 isSupervisor = reader.GetBoolean(reader.GetOrdinal("is Supervisor?")),
                                 DepartmentId = reader.GetInt32(reader.GetOrdinal("Department ID"))
-                                };
+                            };
 
                             if (departments.Any(d => d.id == currentDepartment.id))
                             {
@@ -122,9 +122,11 @@ namespace BangazonAPI.Controllers
                     reader.Close();
                     return Ok(departments);
                 }
+            }
+        }
 
 
-                [HttpGet("{id}", Name = "GetDepartment")]
+        [HttpGet("{id}", Name = "GetDepartment")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
             using (SqlConnection conn = Connection)
@@ -142,7 +144,7 @@ namespace BangazonAPI.Controllers
 
                     Department Department = null;
 
-                    if(reader.Read())
+                    if (reader.Read())
                     {
                         Department = new Department
                         {
@@ -180,7 +182,102 @@ namespace BangazonAPI.Controllers
             }
 
         }
-        //start here on resume
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Department Department)
+        {
+            try
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"UPDATE Department
+                                            SET Name=@Name, Budget=@Budget
+                                            WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@Name", Department.name));
+                        cmd.Parameters.Add(new SqlParameter("@Budget", Department.budget));
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
 
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        }
+                        throw new Exception("No rows affected");
+                    }
+                }
+
+            }
+            catch (Exception)
+            {
+                if (!DepartmentExist(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete ([FromRoute] int id)
+        {
+            try
+            {
+                using (SqlConnection conn = Connection)
+                {
+                    conn.Open();
+                    using (SqlCommand cmd = conn.CreateCommand())
+                    {
+                        cmd.CommandText = @"DELETE FROM Department
+                                            WHERE Id = @id";
+                        cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            return new StatusCodeResult(StatusCodes.Status204NoContent);
+                        }
+                        throw new Exception("No rows affected");
+                    }
+                }
+
+            }
+            catch (Exception)
+            {
+                if (!DepartmentExist(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+        private bool DepartmentExist(int id)
+        {
+            using (SqlConnection conn = Connection)
+            {
+                conn.Open();
+                using (SqlCommand cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = @"
+                                SELECT Id, Name, Budget
+                                FROM Department
+                                WHERE Id = @id";
+                    cmd.Parameters.Add(new SqlParameter("@id", id));
+
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    return reader.Read();
+                }
+
+            }
+        }
     }
 }
