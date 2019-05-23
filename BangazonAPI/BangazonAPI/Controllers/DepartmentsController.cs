@@ -31,7 +31,7 @@ namespace BangazonAPI.Controllers
 
         //GET request for Departments, allows inclusion of employees to query string and allows filtering by Budgets greater than $30,000
         [HttpGet]
-        public async Task<IActionResult> Get(string include, string filter)
+        public async Task<IActionResult> Get(string include, string filter, string gt)
         {
             using (SqlConnection conn = Connection)
             {
@@ -52,17 +52,16 @@ namespace BangazonAPI.Controllers
                     //Adds query string for employees if added
                     if (include == "employees")
                     {
-                        
-                        string includeColumns = @",
-                        e.Id AS 'Employee ID',
+
+                        string includeColumns = @", e.id AS 'Employee ID',
                         e.firstName AS 'Employee First Name',
-                        e.lastName AS 'Eployee Last Name'
-                        e.isSupervisor AS 'is Supervisor?'
+                        e.lastName AS 'Employee Last Name',
+                        e.isSupervisor AS 'is Supervisor?',
                         e.DepartmentId AS 'Department ID'
                     ";
                         //Joins Departments with employees
                         string includeTables = @"
-                        JOIN Employees e ON d.Id = e.DepartmentId
+                        JOIN Employee e ON d.Id = e.DepartmentId
                      ";
                         command = $@"{departmentColumns}
                                      {includeColumns}
@@ -70,15 +69,18 @@ namespace BangazonAPI.Controllers
                                      {includeTables}";
 
                     }
+                    
+                    //Adds a filter query string that returns departments with budget greater than 30000
+                    else if (filter == "budget" && gt == "30000")
+                    {
+                        command = $"{departmentColumns}{departmentTables} WHERE d.Budget >= 30000";
+                    }
+                    
+
                     else
                     {
                         command = $"{departmentColumns} {departmentTables}";
 
-                    }
-                    //Adds a filter query string that returns departments with budget greater than 30000
-                    if (filter == "budget&_gt=30000")
-                    {
-                        command += $"WHERE d.Budget >= 30000";
                     }
                     cmd.CommandText = command;
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -228,7 +230,7 @@ namespace BangazonAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete ([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             try
             {
