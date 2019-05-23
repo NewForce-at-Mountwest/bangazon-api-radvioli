@@ -66,11 +66,23 @@ namespace BangazonAPI.Controllers
 
                         Computer currentComputer = new Computer
                         {
-                            id = reader.GetInt32(reader.GetOrdinal("id")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            make = reader.GetString(reader.GetOrdinal("Make")),
-                            manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                            id = reader.GetInt32(reader.GetOrdinal("Computer Id")),
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("Computer Purchase Date")),
+                            make = reader.GetString(reader.GetOrdinal("Computer Make")),
+                            manufacturer = reader.GetString(reader.GetOrdinal("Computer Manufacturer"))
+
                         };
+
+                        //Check to see if the decomission date is null.If not, add it to the object.  If it is, set the Decomission Date to null on the object.
+
+                        if (!reader.IsDBNull(reader.GetOrdinal("Decomission Date (If Applicable)")))
+                        {
+                            currentComputer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("Decomission Date (If Applicable)"));
+                        }
+                        else
+                        {
+                            currentComputer.DecomissionDate = DateTime.MinValue;
+                        }
                         Computers.Add(currentComputer);
                     }
                     reader.Close();
@@ -111,16 +123,16 @@ namespace BangazonAPI.Controllers
                     {
                         Computer = new Computer
                         {
-                            id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("PurchaseDate")),
-                            make = reader.GetString(reader.GetOrdinal("Make")),
-                            manufacturer = reader.GetString(reader.GetOrdinal("Manufacturer"))
+                            id = reader.GetInt32(reader.GetOrdinal("Computer Id")),
+                            PurchaseDate = reader.GetDateTime(reader.GetOrdinal("Computer Purchase Date")),
+                            make = reader.GetString(reader.GetOrdinal("Computer Make")),
+                            manufacturer = reader.GetString(reader.GetOrdinal("Computer Manufacturer"))
                         };
                         //Checking to see if Decomission Date is null
 
-                        if (!reader.IsDBNull(reader.GetOrdinal("Decomission Date")))
+                        if (!reader.IsDBNull(reader.GetOrdinal("Decomission Date (If Applicable)")))
                         {
-                            Computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("DecomissionDate"));
+                            Computer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("Decomission Date (If Applicable)"));
                         }
                         else
                         {
@@ -207,7 +219,7 @@ namespace BangazonAPI.Controllers
                     conn.Open();
                     using (SqlCommand cmd = conn.CreateCommand())
                     {
-                        cmd.CommandText = @"DELETE FROM Computer WHERE Id = @id";
+                        cmd.CommandText = @"DELETE FROM Computer WHERE id = @id";
                         cmd.Parameters.Add(new SqlParameter("@id", id));
 
                         int rowsAffected = cmd.ExecuteNonQuery();
