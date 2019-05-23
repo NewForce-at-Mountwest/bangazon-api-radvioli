@@ -90,7 +90,7 @@ namespace BangazonAPI.Controllers
                                 id = reader.GetInt32(reader.GetOrdinal("Computer Id")),
                                 make = reader.GetString(reader.GetOrdinal("make")),
                                 manufacturer = reader.GetString(reader.GetOrdinal("manufacturer")),
-                                datePurchased = reader.GetDateTime(reader.GetOrdinal("purchaseDate")),
+                                PurchaseDate = reader.GetDateTime(reader.GetOrdinal("purchaseDate")),
 
                             };
                             employee.employeeComputer = computer;
@@ -100,7 +100,7 @@ namespace BangazonAPI.Controllers
 
                         if (!reader.IsDBNull(reader.GetOrdinal("decomissionDate")))
                         {
-                            employee.employeeComputer.dateDecommissioned = reader.GetDateTime(reader.GetOrdinal("decomissionDate"));
+                            employee.employeeComputer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("decomissionDate"));
 
                         }
 
@@ -172,7 +172,7 @@ namespace BangazonAPI.Controllers
                                 id = reader.GetInt32(reader.GetOrdinal("Computer Id")),
                                 make = reader.GetString(reader.GetOrdinal("make")),
                                 manufacturer = reader.GetString(reader.GetOrdinal("manufacturer")),
-                                datePurchased = reader.GetDateTime(reader.GetOrdinal("purchaseDate")),
+                                PurchaseDate = reader.GetDateTime(reader.GetOrdinal("purchaseDate")),
 
                             };
                             employee.employeeComputer = computer;
@@ -180,7 +180,7 @@ namespace BangazonAPI.Controllers
 
                         if (!reader.IsDBNull(reader.GetOrdinal("decomissionDate")))
                         {
-                            employee.employeeComputer.dateDecommissioned = reader.GetDateTime(reader.GetOrdinal("decomissionDate"));
+                            employee.employeeComputer.DecomissionDate = reader.GetDateTime(reader.GetOrdinal("decomissionDate"));
 
                         }
 
