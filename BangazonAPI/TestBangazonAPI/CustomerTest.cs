@@ -99,7 +99,7 @@ namespace TestBangazonAPI
                 Assert.Equal("Pete", newTestCustomer.firstName);
                 Assert.Equal("Rock", newTestCustomer.lastName);
 
-                DeleteTestCustomer(newTestCustomer, client);
+               await DeleteTestCustomer(newTestCustomer, client);
             }
         }
 
@@ -128,21 +128,21 @@ namespace TestBangazonAPI
                 Assert.Equal("Pete", newTestCustomer.firstName);
                 Assert.Equal("Rock", newTestCustomer.lastName);
 
-                DeleteTestCustomer(newTestCustomer, client);
+                await DeleteTestCustomer(newTestCustomer, client);
             }
         }
 
         //This Test attempts to DELETE a Customer based on an Id not in the db then confirms that Customer is NotFound 
-        //[Fact]
-        //public async Task Test_Delete_NonExistant_Customer_Fails()
-        //{
-        //    using (var client = new APIClientProvider().Client)
-        //    {
-        //        HttpResponseMessage deleteResponse = await client.DeleteAsync("/api/customers/900000");
-        //        Assert.False(deleteResponse.IsSuccessStatusCode);
-        //        Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
-        //    }
-        //}
+        [Fact]
+        public async Task Test_Delete_NonExistant_Customer_Fails()
+        {
+            using (var client = new APIClientProvider().Client)
+            {
+                HttpResponseMessage deleteResponse = await client.DeleteAsync("/api/customers/900000");
+                Assert.False(deleteResponse.IsSuccessStatusCode);
+                Assert.Equal(HttpStatusCode.NotFound, deleteResponse.StatusCode);
+            }
+        }
 
 
         //This test creates a new Customer, PUTs new firstName value in database, performs a GET against the newly created Customer by ID and validates the new firstName value changed, then DELETES the newly created Customer
@@ -182,7 +182,7 @@ namespace TestBangazonAPI
                 //Validate new firstName value was updated
                 Assert.Equal(newFirstName, modifiedTestCustomer.firstName);
 
-                DeleteTestCustomer(modifiedTestCustomer, client);
+                await DeleteTestCustomer(modifiedTestCustomer, client);
             }
         }
     }

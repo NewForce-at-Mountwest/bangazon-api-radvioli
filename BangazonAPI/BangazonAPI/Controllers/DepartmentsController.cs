@@ -29,7 +29,7 @@ namespace BangazonAPI.Controllers
             }
         }
 
-        //GET request for Departments, allows inclusion of employees to query string and allows filtering by Budgets greater than $300,000
+        //GET request for Departments, allows inclusion of employees to query string and allows filtering by Budgets greater than $30,000
         [HttpGet]
         public async Task<IActionResult> Get(string include, string filter)
         {
@@ -40,6 +40,7 @@ namespace BangazonAPI.Controllers
                 {
                     string command = "";
 
+                    //creates GET query for Department
                     string departmentColumns = @"
                     SELECT d.Id AS 'Department Id',
                     d.Name AS 'Department Name',
@@ -48,9 +49,10 @@ namespace BangazonAPI.Controllers
 
                     string departmentTables = @"
                     FROM Department d";
-
+                    //Adds query string for employees if added
                     if (include == "employees")
                     {
+                        
                         string includeColumns = @",
                         e.Id AS 'Employee ID',
                         e.firstName AS 'Employee First Name',
@@ -58,7 +60,7 @@ namespace BangazonAPI.Controllers
                         e.isSupervisor AS 'is Supervisor?'
                         e.DepartmentId AS 'Department ID'
                     ";
-
+                        //Joins Departments with employees
                         string includeTables = @"
                         JOIN Employees e ON d.Id = e.DepartmentId
                      ";
@@ -73,9 +75,10 @@ namespace BangazonAPI.Controllers
                         command = $"{departmentColumns} {departmentTables}";
 
                     }
-                    if (filter == "budget&_gt=300000")
+                    //Adds a filter query string that returns departments with budget greater than 30000
+                    if (filter == "budget&_gt=30000")
                     {
-                        command += $"WHERE d.Budget >= 300000";
+                        command += $"WHERE d.Budget >= 30000";
                     }
                     cmd.CommandText = command;
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -101,7 +104,7 @@ namespace BangazonAPI.Controllers
                                 isSupervisor = reader.GetBoolean(reader.GetOrdinal("is Supervisor?")),
                                 DepartmentId = reader.GetInt32(reader.GetOrdinal("Department ID"))
                             };
-
+                            //If department already exists, don't add them again!
                             if (departments.Any(d => d.id == currentDepartment.id))
                             {
                                 Department thisDepartment = departments.Where(d => d.id == currentDepartment.id).FirstOrDefault();

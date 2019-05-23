@@ -73,7 +73,7 @@ namespace TestBangazonAPI
             }
         }
 
-        //This test Creates a new customer, performs a GET for single Department just created based on department Id and validates data matches on Name and budget fields, then deletes the newly created Department 
+        //This test Creates a new Department, performs a GET for single Department just created based on department Id and validates data matches on Name and budget fields, then deletes the newly created Department 
         [Fact]
         public async Task Test_Get_Single_Department()
         {
