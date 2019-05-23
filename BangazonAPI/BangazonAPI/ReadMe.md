@@ -49,12 +49,21 @@ dotnet add package Microsoft.AspNetCore.Mvc
 dotnet add package Microsoft.AspNetCore.Mvc.Testing
 dotnet restore
 
+To test the files, scroll down in the solution explorer to the TestBangazonAPI folder, right click it and click run tests.
+The results should show on the left side of the screen as successful.
+
 Features
 
 Employee
+Includes an employee model with the following information: FirstName, LastName, isSuperVisor, DepartmentId, ComputerId, EmployeeDepartment, and EmployeeComputer
+The Employee Controller has functionality to view a single employee, view all employees, add an employee, or edit an employee in the database.
+Summary of employee functionality:
 This gives the user the ability to view a single employee or all employees as well as add, and edit employees in the database. 
 
 Payment Type
+Includes a model with name, account number, CustomerId
+The payment type controller has functionality to view a single payment type, view all payment types, add a payment type, edit a payment type, or delete a payment type.
+Summary of payment type functionality:
 This gives the user the ability to view one or all payment types as well as add, edit, and delete payment types.
 
 Contributors
