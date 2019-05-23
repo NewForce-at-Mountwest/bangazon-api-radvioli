@@ -99,7 +99,7 @@ namespace TestBangazonAPI
                 Assert.Equal("Pete", newTestCustomer.firstName);
                 Assert.Equal("Rock", newTestCustomer.lastName);
 
-                DeleteTestCustomer(newTestCustomer, client);
+               await DeleteTestCustomer(newTestCustomer, client);
             }
         }
 
@@ -128,7 +128,7 @@ namespace TestBangazonAPI
                 Assert.Equal("Pete", newTestCustomer.firstName);
                 Assert.Equal("Rock", newTestCustomer.lastName);
 
-                DeleteTestCustomer(newTestCustomer, client);
+                await DeleteTestCustomer(newTestCustomer, client);
             }
         }
 
@@ -182,7 +182,7 @@ namespace TestBangazonAPI
                 //Validate new firstName value was updated
                 Assert.Equal(newFirstName, modifiedTestCustomer.firstName);
 
-                DeleteTestCustomer(modifiedTestCustomer, client);
+                await DeleteTestCustomer(modifiedTestCustomer, client);
             }
         }
     }
